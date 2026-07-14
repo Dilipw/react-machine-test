@@ -38,11 +38,17 @@ function Assignment3() {
         return <h2>{error}</h2>
     }
 
+    const filteredUsers = users.filter((user)=>{
+                return user.name.toLowerCase().includes(search.toLowerCase())
+                || user.username.toLowerCase().includes(search.toLowerCase());
+
+    });
+
     return (
         <>
             <div className="main">
-                <h1>Display Data Assignment 1 to show data in table</h1>
-                <input type="text"/>
+                <h1>Display Data Assignment 3 to show data in table</h1>
+                <input type="text" placeholder="Enter Search Name" value={search} onChange={(e)=>setSearch(e.target.value)}/> 
                 <table>
                     <thead>
                         <tr>
@@ -59,7 +65,7 @@ function Assignment3() {
                     </thead>
                     <tbody>
                         {
-                            users.map((user) => {
+                            filteredUsers.map((user) => {
                                 return (
                                     <tr key={user.id}>
                                         <td>{user.name}</td>

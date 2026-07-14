@@ -3,7 +3,7 @@ import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import Assignment1  from './assignments/Assignment1';
 import Assignment2 from './assignments/Assignment2';
 import Assignment3 from './assignments/Assignment3';
-
+import Assignment4 from './assignments/Assignment4';
 function App() {
 
   return (
@@ -13,6 +13,7 @@ function App() {
           <Route path="/" element={<Assignment1 />}/>
           <Route path="/assignment2" element={<Assignment2 />}/>
            <Route path="/assignment3" element={<Assignment3 />}/>
+              <Route path="/assignment4" element={<Assignment4 />}/>
         </Routes>
       </BrowserRouter>
     </>

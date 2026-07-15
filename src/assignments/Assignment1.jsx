@@ -11,6 +11,7 @@ function Assignment1() {
     const [deleteproduct, setDeleteProduct] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
 
+    const [validationserror, setValildatinError] = useState({});
 
     // form data
 
@@ -39,22 +40,29 @@ function Assignment1() {
 
         setActionLoading(true);
 
-        const error = [];
+        const errors = [];
 
         if (!title.trim()) {
-            return alert("title must be required");
+            errors.title = "title must be required";
+            // return alert("title must be required");
         }
 
         if (!description.trim()) {
-            return alert("description must be required");
+            errors.description = "title must be required";
         }
 
         if (!category.trim()) {
-            return alert("category must be required");
+            errors.category = "title must be required";
         }
 
         if (!price.trim()) {
-            return alert("price must be required");
+            errors.price = "title must be required";
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setValildatinError(errors);
+            setActionLoading(false);
+            return;
         }
 
         try {
@@ -151,8 +159,8 @@ function Assignment1() {
         catch (error) {
 
         }
-        finally{
-             setActionLoading(false);
+        finally {
+            setActionLoading(false);
         }
 
     };
@@ -182,9 +190,29 @@ function Assignment1() {
             <div className="product-page">
                 <form onSubmit={existingproduct ? updateProduct : addProducts}>
                     <input type="text" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    {
+                        validationserror.title && (
+                            <p>{validationserror.title}</p>
+                        )
+                    }
                     <input type="textarea" placeholder="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                    {
+                        validationserror.description && (
+                            <p>{validationserror.description}</p>
+                        )
+                    }
                     <input type="text" placeholder="category" value={category} onChange={(e) => setCategory(e.target.value)} />
+                     {
+                        validationserror.category && (
+                            <p>{validationserror.category}</p>
+                        )
+                    }
                     <input type="text" placeholder="price" value={price} onChange={(e) => setPrice(e.target.value)} />
+                     {
+                        validationserror.price && (
+                            <p>{validationserror.price}</p>
+                        )
+                    }
                     <button type="submit">
                         {existingproduct ? "Update User" : "Add User"}
                     </button>

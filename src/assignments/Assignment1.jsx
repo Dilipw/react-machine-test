@@ -8,6 +8,8 @@ function Assignment1() {
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
     const [existingproduct, setExistingProduct] = useState("");
+    const [deleteproduct, setDeleteProduct] = useState(null);
+
 
 
     // form data
@@ -110,6 +112,7 @@ function Assignment1() {
     }
 
 
+
     // Need function to update the existingproduct details
     const editProduct = (product) => {
         setExistingProduct(product);
@@ -119,6 +122,33 @@ function Assignment1() {
         setPrice(product.price);
         setCategory(product.category);
     }
+
+   const deleteProduct = async(id)=>{
+
+       try{
+          const isConfirm = window.confirm("Are You Sure want to delete this record..");
+
+          if(!isConfirm)
+          {
+            return;
+          }
+
+          const request = await api.delete(`/products/${id}`);
+
+          const updateProducts = products.filter((product)=>{
+              return product.id!=id;
+          });
+
+
+        setProducts(updateProducts);
+          console.log(request);
+       }
+       catch(error)
+       {
+
+       }
+
+   };
 
     useEffect(() => {
         fetchProducts();
@@ -162,6 +192,9 @@ function Assignment1() {
                                 </p>
                                 <button onClick={() => editProduct(product)}>
                                     Update
+                                </button>
+                                 <button onClick={() => (deleteProduct(product.id))}>
+                                    Delete
                                 </button>
                             </div>
 

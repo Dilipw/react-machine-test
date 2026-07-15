@@ -7,6 +7,8 @@ function Assignment1() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
+    const [existingproduct, setExistingProduct] = useState("");
+
 
     // form data
 
@@ -21,7 +23,7 @@ function Assignment1() {
     const fetchProducts = async () => {
         try {
             const response = await api.get('/products');
-            console.log(response.data.products);
+            // console.log(response.data.products);
             setProducts(response.data.products);
         }
         catch (error) {
@@ -36,25 +38,21 @@ function Assignment1() {
 
         e.preventDefault();
 
-        const error=[];
+        const error = [];
 
-        if(!title.trim())
-        {
+        if (!title.trim()) {
             return alert("title must be required");
         }
 
-        if(!description.trim())
-        {
+        if (!description.trim()) {
             return alert("description must be required");
         }
 
-        if(!category.trim())
-        {
+        if (!category.trim()) {
             return alert("category must be required");
         }
 
-        if(!price.trim())
-        {
+        if (!price.trim()) {
             return alert("price must be required");
         }
 
@@ -65,7 +63,7 @@ function Assignment1() {
                 category: category,
                 price: price
             })
-            console.log(request);
+            // console.log(request);
             setProducts([...products, request.data]);
 
             setTitle("");
@@ -79,7 +77,48 @@ function Assignment1() {
         }
     }
 
+    const updateProduct = async (e) => {
+        e.preventDefault();
 
+        try {
+            const response = await api.put(`products/${existingproduct.id}`, {
+                title: title,
+                description: description,
+                category: category,
+                price: price
+            });
+
+            const data = products.map((product) => {
+                return product.id === existingproduct.id ? { ...product, ...response.data } : product;
+            });
+
+
+            setProducts(data);
+
+
+            console.log(response);
+            setTitle("");
+            setCategory("");
+            setDescription("");
+            setPrice("");
+            alert("product updated successfully");
+
+        }
+        catch (error) {
+
+        }
+    }
+
+
+    // Need function to update the existingproduct details
+    const editProduct = (product) => {
+        setExistingProduct(product);
+
+        setTitle(product.title);
+        setDescription(product.description);
+        setPrice(product.price);
+        setCategory(product.category);
+    }
 
     useEffect(() => {
         fetchProducts();
@@ -99,13 +138,13 @@ function Assignment1() {
     return (
         <>
             <div className="product-page">
-                <form onSubmit={addProducts}>
+                <form onSubmit={existingproduct ? updateProduct : addProducts}>
                     <input type="text" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
                     <input type="textarea" placeholder="description" value={description} onChange={(e) => setDescription(e.target.value)} />
                     <input type="text" placeholder="category" value={category} onChange={(e) => setCategory(e.target.value)} />
                     <input type="text" placeholder="price" value={price} onChange={(e) => setPrice(e.target.value)} />
                     <button type="submit">
-                        submit
+                        {existingproduct ? "Update User" : "Add User"}
                     </button>
                 </form>
                 <input type="text" value={search} placeholder="Search product title" onChange={(e) => setSearch(e.target.value)} />
@@ -121,7 +160,7 @@ function Assignment1() {
                                 <p>
                                     {product.description}
                                 </p>
-                                <button>
+                                <button onClick={() => editProduct(product)}>
                                     Update
                                 </button>
                             </div>

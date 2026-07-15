@@ -7,13 +7,15 @@ function Assignment5() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [validationErrors, setValidationErrors] = useState({});
+    const [editingUser, setEditingUser] = useState(null);
     // Form Data
 
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
- 
+
+
 
 
     const fetchUsers = async () => {
@@ -34,6 +36,23 @@ function Assignment5() {
 
         e.preventDefault();
 
+        const errors = {};
+
+        if (!name.trim()) {
+            errors.name = "Name is required";
+        }
+
+        if (!username.trim()) {
+            errors.username = "Username is required";
+        }
+
+        if (!email.trim()) {
+            errors.email = "Email is required";
+        }
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
         try {
             const response = await api.post('/users/add', {
                 firstName: name,
@@ -43,7 +62,7 @@ function Assignment5() {
 
             setUsers([...users, response.data]);
 
-            alert("User added successfully");
+            alert("User Updated successfully");
 
             setName("");
             setUsername("");
@@ -56,6 +75,52 @@ function Assignment5() {
             setLoading(false);
         }
     }
+
+    const editUser = (user) => {
+        setEditingUser(user);
+
+        setName(user.firstName);
+        setUsername(user.username);
+        setEmail(user.email);
+    };
+
+    const updateUser = async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            const response = await api.put(`/users/${editingUser.id}`, {
+                firstName: name,
+                username: username,
+                email: email,
+            });
+
+            const updatedUsers = users.map((user) => {
+
+                return user.id === editingUser.id
+                    ? { ...user, ...response.data }
+                    : user;
+
+            });
+
+            setUsers(updatedUsers);
+
+            alert("User updated successfully");
+
+            setEditingUser(null);
+
+            setName("");
+            setUsername("");
+            setEmail("");
+
+        } catch (error) {
+
+            setError(error.message);
+
+        }
+
+    };
 
     useEffect(() => {
         fetchUsers();
@@ -70,13 +135,16 @@ function Assignment5() {
             <div className="main">
                 <h1>Assignment 5</h1>
                 <form onSubmit={addUser}>
-                
+
                     <input
                         type="text"
                         placeholder="Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
+                    {validationErrors.name && (
+                        <p>{validationErrors.name}</p>
+                    )}
 
                     <input
                         type="text"
@@ -84,16 +152,20 @@ function Assignment5() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
-
+                    {validationErrors.username && (
+                        <p>{validationErrors.username}</p>
+                    )}
                     <input
                         type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-
+                    {validationErrors.email && (
+                        <p>{validationErrors.email}</p>
+                    )}
                     <button type="submit">
-                        Add User
+                        {editingUser ? "Update User" : "Add User"}
                     </button>
 
                 </form>
@@ -107,6 +179,7 @@ function Assignment5() {
                             <th>Name</th>
                             <th>Email</th>
                             <th>Username</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,6 +198,11 @@ function Assignment5() {
                                         </td>
                                         <td>
                                             {user.username}
+                                        </td>
+                                        <td>
+                                            <button onClick={() => editUser(user)}>
+                                                Edit
+                                            </button>
                                         </td>
                                     </tr>
                                 )

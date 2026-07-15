@@ -1,69 +1,70 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios"
 
 
 function Assignment1() {
-    const [users, setUsers] = useState([]);
-    const [error, setError] = useState(null);
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [search, setSearch] = useState("");
+
+    const fetchProducts = async () => {
+        try {
+            const response = await api.get('/products');
+            console.log(response.data.products);
+            setProducts(response.data.products);
+        }
+        catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+
+    
+
 
     useEffect(() => {
-
-        const fetchUsers = async () => {
-
-            try {
-                const response = await axios.get('https://jsonplaceholder.typicode.com/users');
-
-                setUsers(response.data);
-            }
-            catch (error) {
-                setError(error.message);
-            }
-            finally {
-                setLoading(false);
-            }
-        }
-
-        fetchUsers();
-
+        fetchProducts();
     }, []);
 
+    const filterProducts = products.filter((product) => {
+        return product.title.toLowerCase().includes(search.toLowerCase());
+    });
+
+    if (loading) {
+        return <h1>Loading</h1>;
+    }
+
+    if (error) {
+        return <h2>{error}</h2>
+    }
     return (
         <>
-         <div className="main">
-             <h1>Display Data Assignment 1 to show data in table</h1>
-             <table>
-            <thead>
-                <tr>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        UserName
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                  {
-                users.map((user) => {
-                    return(
-                      <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.username}</td>
-                        <td>{user.email}</td>
-                      </tr>
-                    )
-                }
-                )
-            }
-            </tbody>
-         </table>
+            <div className="product-page">
+                <input type="text" value={search} placeholder="Search product title" onChange={(e)=>setSearch(e.target.value)}/>
+                {
+                    filterProducts.map((product) => {
+                        return (
+                            <div key={product.id}>
+                                <h1>
+                                    {product.title}
+                                </h1>
+                                <h3>{product.category}</h3>
+                                <b>{product.price}</b>
+                                <p>
+                                    {product.description}
+                                </p>
+                                <button>
+                                    Update
+                                </button>
+                            </div>
 
-          
-         </div>
+                        )
+                    })
+                }
+            </div>
         </>
     );
 }

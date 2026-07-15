@@ -5,6 +5,8 @@ import Assignment2 from './assignments/Assignment2';
 import Assignment3 from './assignments/Assignment3';
 import Assignment4 from './assignments/Assignment4';
 import Assignment5 from './assignments/Assignment5';
+import Assignment6 from './assignments/Assignment6';
+
 
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
           <Route path="/assignment3" element={<Assignment3 />} />
           <Route path="/assignment4" element={<Assignment4 />} />
           <Route path="/assignment5" element={<Assignment5 />} />
+          <Route path="/assignment6" element={<Assignment6 />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -9,7 +9,7 @@ function Assignment1() {
     const [search, setSearch] = useState("");
     const [existingproduct, setExistingProduct] = useState("");
     const [deleteproduct, setDeleteProduct] = useState(null);
-
+    const [actionLoading, setActionLoading] = useState(false);
 
 
     // form data
@@ -18,9 +18,6 @@ function Assignment1() {
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
     const [price, setPrice] = useState("");
-
-
-
 
     const fetchProducts = async () => {
         try {
@@ -39,6 +36,8 @@ function Assignment1() {
     const addProducts = async (e) => {
 
         e.preventDefault();
+
+        setActionLoading(true);
 
         const error = [];
 
@@ -77,11 +76,14 @@ function Assignment1() {
         catch (error) {
 
         }
+        finally {
+            setActionLoading(false)
+        }
     }
 
     const updateProduct = async (e) => {
         e.preventDefault();
-
+        setActionLoading(true);
         try {
             const response = await api.put(`products/${existingproduct.id}`, {
                 title: title,
@@ -109,6 +111,9 @@ function Assignment1() {
         catch (error) {
 
         }
+        finally {
+            setActionLoading(false);
+        }
     }
 
 
@@ -123,32 +128,34 @@ function Assignment1() {
         setCategory(product.category);
     }
 
-   const deleteProduct = async(id)=>{
+    const deleteProduct = async (id) => {
 
-       try{
-          const isConfirm = window.confirm("Are You Sure want to delete this record..");
+        setActionLoading(true);
+        try {
+            const isConfirm = window.confirm("Are You Sure want to delete this record..");
 
-          if(!isConfirm)
-          {
-            return;
-          }
+            if (!isConfirm) {
+                return;
+            }
 
-          const request = await api.delete(`/products/${id}`);
+            const request = await api.delete(`/products/${id}`);
 
-          const updateProducts = products.filter((product)=>{
-              return product.id!=id;
-          });
+            const updateProducts = products.filter((product) => {
+                return product.id != id;
+            });
 
 
-        setProducts(updateProducts);
-          console.log(request);
-       }
-       catch(error)
-       {
+            setProducts(updateProducts);
+            console.log(request);
+        }
+        catch (error) {
 
-       }
+        }
+        finally{
+             setActionLoading(false);
+        }
 
-   };
+    };
 
     useEffect(() => {
         fetchProducts();
@@ -161,6 +168,11 @@ function Assignment1() {
     if (loading) {
         return <h1>Loading</h1>;
     }
+
+    if (actionLoading) {
+        return <h1>Loading</h1>;
+    }
+
 
     if (error) {
         return <h2>{error}</h2>
@@ -193,7 +205,7 @@ function Assignment1() {
                                 <button onClick={() => editProduct(product)}>
                                     Update
                                 </button>
-                                 <button onClick={() => (deleteProduct(product.id))}>
+                                <button onClick={() => (deleteProduct(product.id))}>
                                     Delete
                                 </button>
                             </div>
